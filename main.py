@@ -2,6 +2,7 @@
 
 from tabulate import tabulate
 import sys
+import statistics
 
 # Functionality
 
@@ -49,7 +50,7 @@ def data_print(data, *args):
 
     # TESTING
     # print(data, disp, header)
-    print(tabulate(disp, headers = header))
+    print(tabulate(disp, headers = header, tablefmt="pretty"))
 
 def fx(x, f):
     """
@@ -76,7 +77,7 @@ def cf(frequencies):
 def height(data):
     return int(data[0].split('-')[1]) - int(data[0].split('-')[0])
 
-# Stats
+# Stats - MOCT
 
 def mean(type_data):
 
@@ -84,13 +85,13 @@ def mean(type_data):
         data = data_input('x')
         data_print(data, 'x')
         mean = sum(int_converter(data[0]))/len(data[0])
-        print(f"\nMean (x̄) = {mean} = {mean:.3f}")
+        print(f"\nMean (x̄) = {mean} = {round(mean, 2)}")
     
     elif type_data == 2:
         data = data_input('x', 'f')
         data_print(data, 'x', 'f')
         mean = sum(fx(int_converter(data[0]), int_converter(data[1])))/sum(int_converter(data[1]))
-        print(f"\nMean (x̄) = {mean} = {mean:.3f}")
+        print(f"\nMean (x̄) = {mean} = {round(mean, 2)}")
 
     elif type_data == 3:
         print("Note - Class Interval should be in X-Y format.\n")
@@ -105,7 +106,7 @@ def mean(type_data):
         data_print(data, 'Class Interval', 'x', 'f')
         
         mean = sum(fx(CI_to_x, int_converter(data[2])))/sum(int_converter(data[2]))
-        print(f"\nMean (x̄) = {mean} = {mean:.3f}")
+        print(f"\nMean (x̄) = {mean} = {round(mean, 2)}")
 
     elif type_data == 4:
         sys.exit("\nThank you for using!\n")
@@ -123,9 +124,11 @@ def median(type_data):
         final.sort()
         
         if len(data[0]) % 2 == 1:
-            print(f"\nMedian = {final[int(len(final)/2)]}")
+            median = final[int(len(final)/2)]
+            print(f"\nMedian = {median} = {median:.3f}")
         else:
-            print(f"\nMedian = {(int_converter(final)[int(len(final)/2) - 1] + int_converter(final)[int((len(final)/2))])/2}")
+            median = (int_converter(final)[int(len(final)/2) - 1] + int_converter(final)[int((len(final)/2))])/2
+            print(f"\nMedian = {median} = {round(median, 2)}")
 
     elif type_data == 2:
 
@@ -140,7 +143,7 @@ def median(type_data):
                 index = int_converter(data[2]).index(f)
                 break
 
-        print(f"\nMedian = {data[0][index]}")
+        print(f"\nMedian = {data[0][index]} = {round(data[0][index], 2)}")
 
     elif type_data == 3:
         print("Note - Class Interval should be in X-Y format.\n")
@@ -168,7 +171,8 @@ def median(type_data):
         # f = int(data[2][index]
         # N = sum(int_converter(data[2]))
 
-        print(f"\nMedian = {int((data[0][index].split('-')[0])) + (height(data[0]) / int(data[2][index])) * ((sum(int_converter(data[2])) / 2) - int(data[3][index-1]))}")
+        median = int((data[0][index].split('-')[0])) + (height(data[0]) / int(data[2][index])) * ((sum(int_converter(data[2])) / 2) - int(data[3][index-1]))
+        print(f"\nMedian = {median} = {round(median, 2)}")
         
     elif type_data == 4:
         sys.exit("\nThank you for using!\n")
@@ -189,7 +193,34 @@ def mode(type_data):
         print("\nWORK IN PROGRESS!")
 
     elif type_data == 3:
-        pass
+        print("Note - Class Interval should be in X-Y format.\n")
+        data = data_input('Class Interval', 'f')
+
+        CI_to_x = []
+
+        for interval in data[0]:
+            CI_to_x.append((int(interval.split('-')[0]) + int(interval.split('-')[1]))/2)
+        
+        data.insert(1, str_converter(CI_to_x))
+        data_print(data, 'Class Interval', 'x', 'f')
+
+        if int_converter(data[2]).count(max(int_converter(data[2]))) == 1:
+            index = int_converter(data[2]).index(max(int_converter(data[2])))
+
+            # Mode = L + ((f1- f0) / (2f1 - f0 - f2)) x i
+            # L = 
+
+            f1 = int(data[2][index])
+            f0 = int(data[2][index-1])
+            f2 = int(data[2][index+1])
+            mode = int(data[0][index].split('-')[0]) + ((f1 - f0) / ((2 * f1) - f0 - f2) * height(data[0]))
+            print(f"\nMode = {mode}")
+        
+        else:
+            print("""\nNote - The series is bi-modal and mode is ill-defined.
+WORK IN PROGRESS!\n""")
+            # print(f"\nMode = {(3 * MEDIAN) - (2 * MEAN)}")
+
 
     elif type_data == 4:
         sys.exit("\nThank you for using!\n")
@@ -225,9 +256,87 @@ Press 4 to exit program""")
         print("Invalid input!\n")
         moct()
 
+# Stats - MOD
+
+def range_calc(type_data):
+
+    if type_data == 1:
+        
+        data = data_input('x')
+        data_print(data, 'x')
+
+        print(f"\nRange = {max(data[0]) - min(data[0])}")
+        print(f"Coefficient of Range = {(max(data[0]) - min(data[0])) / (max(data[0]) + min(data[0]))} = {(round(max(data[0]) - min(data[0])) / (max(data[0]) + min(data[0])), 3)}")
+
+    if type_data == 2:
+        data = data_input('x', 'f')
+        data_print(data, 'x', 'f')
+
+        print(f"\nRange = {max(data[0]) - min(data[0])}")
+        print(f"Coefficient of Range = {(max(data[0]) - min(data[0])) / (max(data[0]) + min(data[0])), round((max(data[0]) - min(data[0])) / (max(data[0]) + min(data[0])), 3)}")
+
+    if type_data == 3:
+        print("\nNote - Class Interval should be in X-Y format.\n")
+        data = data_input('Class Interval', 'f')
+        data_print(data, 'Class Interval', 'f')
+
+        print(f"\nRange = {int(data[0][-1].split('-')[1]) - int(data[0][0].split('-')[0])}")
+        coeff = (int(data[0][-1].split('-')[1]) - int(data[0][0].split('-')[0])) / (int(data[0][-1].split('-')[1]) + int(data[0][0].split('-')[0]))
+        print(f"Coefficient of Range = {coeff} = {round(coeff, 3)}")
+
+    elif type_data == 4:
+        sys.exit("\nThank you for using!\n")
+
+    else:
+        print("Invalid input!\n")
+        range_calc(type_of_data())
+
+def quartile(type_data):
+
+    if type_data == 1:
+        
+        data = data_input('x')
+        data_print(data, 'x')
+
+        q1 = int(data[0][int(((len(data[0]) + 1) / 4)-1)])
+        q3 = int(data[0][int(((len(data[0]) + 1) * (3/4))-1)])
+
+        print(f"\nLower Quartile (Q1) = {q1}")
+        print(f"Upper Quartile (Q1) = {q3}")
+        print(f"Interquartile Range = {q3 - q1}")
+        print(f"Quartile Deviation = {(q3 - q1) / 2}")
+        print(f"Coefficient of Quartile Deviation = {(q3 - q1) / (q3 + q1)} = {round(((q3 - q1) / (q3 + q1)), 3)}")
+
+def mod():
+    
+    print("""\nPress 1 for Range
+Press 2 for Quartile Deviation
+Press 3 for Mean Deviation/Average Deviation
+Press 4 to exit program""")
+
+    try:
+        choice_mod = int(input("Enter choice: "))
+    except ValueError:
+        print("Invalid input!\n")
+        mod()
+
+    if choice_mod == 1:
+        range_calc(type_of_data())
+
+    elif choice_mod == 2:
+        quartile(type_of_data())
+
+    elif choice_mod == 4:
+        sys.exit("\nThank you for using!\n")
+
+    else:
+        print("Invalid input!\n")
+        mod()
+
 def main():
     print("""\nPress 1 for Measures of Central Tendacy/Averages
-Pres 3 to exit program""")
+Press 2 for Measures of Dispersion
+Press 3 to exit program""")
     try:
         choice_main = int(input("Enter choice: "))
     except ValueError:
@@ -235,6 +344,9 @@ Pres 3 to exit program""")
         main()
     if choice_main == 1:
         moct()
+
+    if choice_main == 2:
+        mod()
 
     elif choice_main == 3:
         sys.exit("\nThank you for using!\n")
