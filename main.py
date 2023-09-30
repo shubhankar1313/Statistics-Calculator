@@ -2,7 +2,6 @@
 
 from tabulate import tabulate
 import sys
-import statistics
 
 # Functionality
 
@@ -69,7 +68,7 @@ def cf(frequencies):
     cf, sum = [], 0
 
     for f in frequencies:
-        sum += f
+        sum += int(f)
         cf.append(sum)
 
     return cf
@@ -302,10 +301,86 @@ def quartile(type_data):
         q3 = int(data[0][int(((len(data[0]) + 1) * (3/4))-1)])
 
         print(f"\nLower Quartile (Q1) = {q1}")
-        print(f"Upper Quartile (Q1) = {q3}")
+        print(f"Upper Quartile (Q3) = {q3}")
         print(f"Interquartile Range = {q3 - q1}")
         print(f"Quartile Deviation = {(q3 - q1) / 2}")
         print(f"Coefficient of Quartile Deviation = {(q3 - q1) / (q3 + q1)} = {round(((q3 - q1) / (q3 + q1)), 3)}")
+
+    elif type_data == 2:
+        data = data_input('x', 'f')
+
+        CF = cf(int_converter(data[1]))
+
+        data_print(data, 'x', 'f', 'c.f.')
+                 
+        for f in CF:
+            if f < ((CF[-1] + 1) / 4):
+                continue
+            else:
+                index_q1 = CF.index(f)
+                break
+        
+        for f in CF:
+            if f < ((CF[-1] + 1) * (3/4)):
+                continue
+            else:
+                index_q3 = CF.index(f)
+                break
+        
+        q1 = int(data[0][index_q1])
+        q3 = int(data[0][index_q3])
+        
+        print(f"\nLower Quartile (Q1) = {q1}")
+        print(f"Upper Quartile (Q3) = {q3}")
+        print(f"Interquartile Range = {q3 - q1}")
+        print(f"Quartile Deviation = {(q3 - q1) / 2}")
+        print(f"Coefficient of Quartile Deviation = {(q3 - q1) / (q3 + q1)} = {round(((q3 - q1) / (q3 + q1)), 3)}")
+
+    elif type_data == 3:
+        print("\nNote - Class Interval should be in X-Y format.\n")
+        data = data_input('Class Interval', 'f')
+
+        CF = cf(int_converter(data[1]))
+
+        CI_to_x = []
+
+        for interval in data[0]:
+            CI_to_x.append((int(interval.split('-')[0]) + int(interval.split('-')[1]))/2)
+        
+        data.insert(1, str_converter(CI_to_x))
+        data.append(CF)
+
+        data_print(data, 'Class Interval', 'x', 'f', 'c.f.')
+
+        for f in CF:
+            if f < ((CF[-1] + 1) / 4):
+                continue
+            else:
+                index_q1 = CF.index(f)
+                break
+        
+        for f in CF:
+            if f < ((CF[-1] + 1) * (3/4)):
+                continue
+            else:
+                index_q3 = CF.index(f)
+                break
+        
+        q1 = int(data[1][int(index_q1)][:2])
+        q3 = int(data[1][int(index_q3)][:2])
+        
+        print(f"\nLower Quartile (Q1) = {q1}")
+        print(f"Upper Quartile (Q3) = {q3}")
+        print(f"Interquartile Range = {q3 - q1}")
+        print(f"Quartile Deviation = {(q3 - q1) / 2}")
+        print(f"Coefficient of Quartile Deviation = {(q3 - q1) / (q3 + q1)} = {round(((q3 - q1) / (q3 + q1)), 3)}")
+
+    elif type_data == 4:
+        sys.exit("\nThank you for using!\n")
+
+    else:
+        print("Invalid input!\n")
+        range_calc(type_of_data())
 
 def mod():
     
